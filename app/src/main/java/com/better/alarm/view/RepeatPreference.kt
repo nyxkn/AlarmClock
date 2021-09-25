@@ -39,7 +39,7 @@ fun DaysOfWeek.showDialog(context: Context): Single<DaysOfWeek> {
             weekdays[Calendar.FRIDAY],
             weekdays[Calendar.SATURDAY],
             weekdays[Calendar.SUNDAY])
-    var mutableDays = coded
+    var mutableDays = if (isDeleteAfterDismiss) 0 else coded
     AlertDialog.Builder(context)
         .setMultiChoiceItems(entries, booleanArray) { _, which, isChecked ->
           mutableDays =

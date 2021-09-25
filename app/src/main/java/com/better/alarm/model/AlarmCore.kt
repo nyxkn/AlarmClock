@@ -267,7 +267,8 @@ class AlarmCore(
         } else {
           stateMachine.transitionTo(normalSet)
         }
-      } else if (container.isDeleteOnDismiss) {
+      } else if (container.daysOfWeek.isDeleteAfterDismiss) {
+        log.debug { "Delete after dismiss!" }
         stateMachine.transitionTo(deletedState)
       } else {
         log.debug { "Repeating is not set, disabling the alarm" }

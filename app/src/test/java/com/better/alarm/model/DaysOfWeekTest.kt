@@ -2,7 +2,7 @@ package com.better.alarm.model
 
 import android.content.Context
 import com.better.alarm.R
-import java.util.Locale
+import java.util.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -13,7 +13,7 @@ class DaysOfWeekTest {
 
   init {
     `when`(context.getText(R.string.day_concat)).thenReturn(", ")
-    `when`(context.getText(R.string.never)).thenReturn("")
+    `when`(context.getText(R.string.never)).thenReturn("Never")
   }
 
   @Test
@@ -42,5 +42,11 @@ class DaysOfWeekTest {
         .isEqualTo("Sat, Sun")
   }
 
-  @Test fun `getNextAlarm`() {}
+  @Test
+  fun `delete after dismiss is a valid value`() {
+    Locale.setDefault(Locale.ENGLISH)
+    assertThat(DaysOfWeek.deleteAfterDismiss.isDeleteAfterDismiss).isTrue()
+    assertThat(DaysOfWeek.deleteAfterDismiss.toString(context, false)).isEqualTo("")
+    assertThat(DaysOfWeek.deleteAfterDismiss.toString(context, true)).isEqualTo("Never")
+  }
 }

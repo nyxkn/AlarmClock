@@ -44,6 +44,7 @@ import com.better.alarm.logger.Logger
 import com.better.alarm.lollipop
 import com.better.alarm.model.AlarmValue
 import com.better.alarm.model.Alarmtone
+import com.better.alarm.model.DaysOfWeek
 import com.better.alarm.model.ringtoneManagerString
 import com.better.alarm.util.Optional
 import com.better.alarm.util.modify
@@ -188,12 +189,16 @@ class AlarmDetailsFragment : Fragment() {
 
     mDeleteOnDismissRow.setOnClickListener {
       modify("Delete on Dismiss") { value ->
-        value.copy(isDeleteOnDismiss = !value.isDeleteOnDismiss, isEnabled = true)
+        value.copy(
+            daysOfWeek =
+                if (value.daysOfWeek.isDeleteAfterDismiss) DaysOfWeek(0)
+                else DaysOfWeek.deleteAfterDismiss,
+            isEnabled = true)
       }
     }
 
     observeEditor { value ->
-      mDeleteOnDismissCheckBox.isChecked = value.isDeleteOnDismiss
+      mDeleteOnDismissCheckBox.isChecked = value.daysOfWeek.isDeleteAfterDismiss
       mDeleteOnDismissRow.visibility = if (value.daysOfWeek.isRepeatSet) View.GONE else View.VISIBLE
     }
   }

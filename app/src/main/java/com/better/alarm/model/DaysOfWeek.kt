@@ -5,20 +5,34 @@ import com.better.alarm.R
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
-/*
- * Days of week code as a single int. 0x00: no day 0x01: Monday 0x02:
- * Tuesday 0x04: Wednesday 0x08: Thursday 0x10: Friday 0x20: Saturday 0x40:
- * Sunday
+/**
+ * Days of week code as a single int.
+ *
+ * * 0x00: no day
+ * * 0x01: Monday
+ * * 0x02: Tuesday
+ * * 0x04: Wednesday
+ * * 0x08: Thursday
+ * * 0x10: Friday
+ * * 0x20: Saturday
+ * * 0x40: Sunday
+ * * 0x80: [deleteAfterDismissFlag] alarm will be deleted after dismissed
  */
 data class DaysOfWeek(val coded: Int) {
+  init {
+    require(coded == deleteAfterDismissFlag || coded in (0..0x7f)) {
+      "Invalid coded value: ${coded.toString(2)}"
+    }
+  }
   // Returns days of week encoded in an array of booleans.
   val booleanArray = BooleanArray(7) { index -> index.isSet() }
-  val isRepeatSet = coded != 0
+  val isDeleteAfterDismiss: Boolean = coded == deleteAfterDismissFlag
+  val isRepeatSet = !isDeleteAfterDismiss && coded > 0
 
   fun toString(context: Context, showNever: Boolean): String {
     return when {
-      coded == 0 && showNever -> context.getText(R.string.never).toString()
-      coded == 0 -> ""
+      !isRepeatSet && showNever -> context.getText(R.string.never).toString()
+      !isRepeatSet -> ""
       // every day
       coded == 0x7f -> return context.getText(R.string.every_day).toString()
       // count selected days
@@ -41,7 +55,10 @@ data class DaysOfWeek(val coded: Int) {
   }
 
   private fun Int.isSet(): Boolean {
-    return coded and (1 shl this) > 0
+    return when (coded) {
+      deleteAfterDismissFlag -> false
+      else -> coded and (1 shl this) > 0
+    }
   }
 
   /** returns number of days from today until next alarm */
@@ -56,6 +73,7 @@ data class DaysOfWeek(val coded: Int) {
   }
 
   override fun toString(): String {
+    if (coded == deleteAfterDismissFlag) return "oneshot"
     return (if (0.isSet()) "m" else "_") +
         (if (1.isSet()) 't' else '_') +
         (if (2.isSet()) 'w' else '_') +
@@ -66,6 +84,9 @@ data class DaysOfWeek(val coded: Int) {
   }
 
   companion object {
+    private const val deleteAfterDismissFlag = 0b10000000
+    val deleteAfterDismiss = DaysOfWeek(deleteAfterDismissFlag)
+
     private val DAY_MAP =
         intArrayOf(
             Calendar.MONDAY,

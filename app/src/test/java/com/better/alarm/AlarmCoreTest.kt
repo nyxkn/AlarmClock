@@ -313,4 +313,20 @@ class AlarmCoreTest {
     verify { stateNotifierMock.broadcastAlarmState(alarm.id, Intents.ALARM_SNOOZE_ACTION, any()) }
     assertThat(nextTimeInStoreWhenBroadcasting?.get(Calendar.MINUTE)).isEqualTo(15)
   }
+
+  @Test
+  fun `Delete after dismiss alarm is deleted after dismiss`() {
+    val alarm = createAlarm()
+    act("Set on 1:00") {
+      alarm.edit { copy(daysOfWeek = DaysOfWeek.deleteAfterDismiss, isEnabled = true, hour = 1) }
+    }
+    act("Fired") { alarm.onAlarmFired() }
+    act("Dismiss") { alarm.dismiss() }
+
+    verify { stateNotifierMock.broadcastAlarmState(alarm.id, Intents.ALARM_DISMISS_ACTION) }
+    // alarm was deleted
+    assertThat(store.alarms().blockingFirst().isEmpty()).isTrue()
+    // no other alarms is set
+    assertThat(alarmSetterMock.calendar).isNull()
+  }
 }
