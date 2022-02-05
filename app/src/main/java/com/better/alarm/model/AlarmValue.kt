@@ -15,7 +15,8 @@ data class AlarmValue(
     val alarmtone: Alarmtone,
     val isVibrate: Boolean,
     val label: String,
-    val daysOfWeek: DaysOfWeek
+    val daysOfWeek: DaysOfWeek,
+    val ignoreDST: Boolean,
 ) {
   val skipping = state.contentEquals("SkippingSetState")
 
@@ -57,7 +58,9 @@ data class AlarmValue(
           alarmtone = data.alarmtone,
           isVibrate = data.isVibrate,
           label = data.label,
-          daysOfWeek = data.daysOfWeek)
+          daysOfWeek = data.daysOfWeek,
+          ignoreDST = data.ignoreDST
+      )
 
   fun withLabel(label: String) = copy(label = label)
   fun withHour(hour: Int) = copy(hour = hour)

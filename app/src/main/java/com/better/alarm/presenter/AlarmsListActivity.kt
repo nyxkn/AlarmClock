@@ -369,7 +369,8 @@ class AlarmsListActivity : AppCompatActivity() {
                       label = savedInstanceState.getString("label") ?: "",
                       isVibrate = true,
                       state = savedInstanceState.getString("state") ?: "",
-                      nextTime = Calendar.getInstance()))
+                      nextTime = Calendar.getInstance(),
+                      ignoreDST = savedInstanceState.getBoolean("ignoreDST")))
             } else {
               Optional.absent()
             })
@@ -397,6 +398,7 @@ class AlarmsListActivity : AppCompatActivity() {
         putString("alarmtone", edited.alarmtone.persistedString)
         putBoolean("skipping", edited.skipping)
         putString("state", edited.state)
+        putBoolean("ignoreDST", edited.ignoreDST)
       }
 
       logger.trace { "Saved state $toWrite" }
