@@ -31,8 +31,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 sealed class Event {
   override fun toString(): String = javaClass.simpleName
@@ -674,13 +673,23 @@ class AlarmCore(
   }
 
   private fun calculateNextTime(): Calendar {
-    return calendars.now().apply {
-      set(Calendar.HOUR_OF_DAY, container.hour)
-      set(Calendar.MINUTE, container.minutes)
-      set(Calendar.SECOND, 0)
-      set(Calendar.MILLISECOND, 0)
-      advanceCalendar()
-    }
+      val date = calendars.now().apply {
+          set(Calendar.HOUR_OF_DAY, container.hour)
+          set(Calendar.MINUTE, container.minutes)
+      }
+      val isInDST = TimeZone.getDefault().inDaylightTime(date.time)
+
+      return calendars.now().apply {
+          if (container.ignoreDST && isInDST) {
+              set(Calendar.HOUR_OF_DAY, container.hour - 1)
+          } else {
+              set(Calendar.HOUR_OF_DAY, container.hour)
+          }
+          set(Calendar.MINUTE, container.minutes)
+          set(Calendar.SECOND, 0)
+          set(Calendar.MILLISECOND, 0)
+          advanceCalendar()
+      }
   }
 
   private fun Calendar.advanceCalendar() {

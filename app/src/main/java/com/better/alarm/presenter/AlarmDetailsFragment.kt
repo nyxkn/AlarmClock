@@ -113,6 +113,7 @@ class AlarmDetailsFragment : Fragment() {
     onCreateRepeatView()
     onCreateRingtoneView()
     onCreatePrealarmView()
+    onCreateIgnoreDSTView()
     onCreateBottomView()
 
     store.transitioningToNewAlarmDetails().takeFirst { isNewAlarm ->
@@ -200,6 +201,22 @@ class AlarmDetailsFragment : Fragment() {
           mPreAlarmRow.visibility = if (value.toInt() == -1) View.GONE else View.VISIBLE
         }
         .addTo(disposables)
+  }
+
+  private fun onCreateIgnoreDSTView() {
+      val mIgnoreDSTRow by lazy {
+          fragmentView.findViewById(R.id.details_ignoredst_row) as LinearLayout
+      }
+
+      val mIgnoreDSTCheckBox by lazy {
+          fragmentView.findViewById(R.id.details_ignoredst_checkbox) as CheckBox
+      }
+
+      mIgnoreDSTRow.setOnClickListener {
+          modify("Ignore DST") { value -> value.copy(ignoreDST = !value.ignoreDST, isEnabled = true) }
+      }
+
+      observeEditor { value -> mIgnoreDSTCheckBox.isChecked = value.ignoreDST }
   }
 
   private fun onCreateRingtoneView() {

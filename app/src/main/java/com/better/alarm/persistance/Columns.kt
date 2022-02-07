@@ -86,6 +86,13 @@ class Columns : BaseColumns {
      */
     const val STATE = "state"
 
+    /**
+    * Ignore DST
+    *
+    * Type: BOOLEAN
+    */
+    const val IGNOREDST = "ignoredst"
+
     /** The default sort order for this table */
     const val DEFAULT_SORT_ORDER = "$HOUR, $MINUTES ASC"
 
@@ -102,7 +109,8 @@ class Columns : BaseColumns {
             MESSAGE,
             ALERT,
             PREALARM,
-            STATE)
+            STATE,
+            IGNOREDST)
 
     /**
      * These save calls to cursor.getColumnIndexOrThrow() THEY MUST BE KEPT IN SYNC WITH ABOVE QUERY
@@ -119,5 +127,6 @@ class Columns : BaseColumns {
     const val ALARM_ALERT_INDEX = 8
     const val ALARM_PREALARM_INDEX = 9
     const val ALARM_STATE_INDEX = 10
+    const val ALARM_IGNOREDST_INDEX = 11
   }
 }

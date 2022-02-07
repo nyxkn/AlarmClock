@@ -85,7 +85,9 @@ class PersistingContainerFactory(private val calendars: Calendars, private val m
         // ALARM_STATE_INDEX column
         state = c.getString(Columns.ALARM_STATE_INDEX)
                 ?: (if (enabled) "NormalSetState" else "DisabledState"),
-        nextTime = calendars.now().apply { timeInMillis = c.getLong(Columns.ALARM_TIME_INDEX) })
+        nextTime = calendars.now().apply { timeInMillis = c.getLong(Columns.ALARM_TIME_INDEX) },
+        ignoreDST = c.getInt(Columns.ALARM_IGNOREDST_INDEX) == 1,
+    )
   }
 
   companion object {
@@ -105,7 +107,8 @@ class PersistingContainerFactory(private val calendars: Calendars, private val m
               label = "",
               alarmtone = Alarmtone.Default(),
               state = "",
-              nextTime = now)
+              nextTime = now,
+              ignoreDST = false)
 
       // generate a new id
       val id = idMapper(defaultActiveRecord)
@@ -126,6 +129,7 @@ class PersistingContainerFactory(private val calendars: Calendars, private val m
       put(Columns.PREALARM, isPrealarm)
       put(Columns.ALARM_TIME, nextTime.timeInMillis)
       put(Columns.STATE, state)
+      put(Columns.IGNOREDST, ignoreDST)
     }
   }
 }
